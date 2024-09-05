@@ -18,17 +18,8 @@ class ProductController extends Controller
     public function index(ProductRequest $request): JsonResource
     {
         $data = $request->validated();
-        $products = Product::query();
-
-        if (isset($data['properties'])) {
-            foreach ($data['properties'] as $key => $filter) {
-                $products->whereHas('options', function ($query) use ($key, $filter) {
-                    $query->whereIn('value', $filter)->where('name', $key);
-                });
-            }
-        }
-
-        $products = $products->get()->paginate(40);
+        $filter = app()->make(ProductFilter::class, ['queryParams' => array_filter($data)]);
+        $products = Product::filter($filter)->get()->paginate(40);
 
         return ProductResource::collection($products);
     }

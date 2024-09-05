@@ -13,8 +13,21 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        Product::factory(100)
-            ->has(ProductOption::factory(rand(1, 3)), 'options')
-            ->create();
+        $products = Product::factory(100)->create();
+        $propertyList = ['Цвет', 'ОС', 'Версия'];
+        $propertyValues = [
+            ['Красный', 'Синий', 'Желтый', 'Зеленый'],
+            ['iOS', 'Android', 'Mac'],
+            [8, 9, 10, 11, 12]
+        ];
+        foreach ($products as $product) {
+            for ($i = 0; $i < count($propertyList); $i++) {
+                ProductOption::create([
+                    'name' => $propertyList[$i],
+                    'value' => fake()->randomElement($propertyValues[$i]),
+                    'product_id' => $product->id,
+                ]);
+            }
+        }
     }
 }
